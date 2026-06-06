@@ -12,20 +12,28 @@ import argparse
 import matplotlib.pyplot as plt
 import numpy as np
 
-from social_force import BottleneckScenario, LaneFormationScenario, Scenario
+from social_force import (
+    BottleneckScenario,
+    CornerScenario,
+    IntersectionScenario,
+    LaneFormationScenario,
+    MetroStationScenario,
+    Scenario,
+)
 from visualization import AnimationConfig, PedestrianAnimator, save_animation
 
 
 def build_scenario(name: str, n_pedestrians: int | None) -> Scenario:
-    """Tworzy scenariusz o podanej nazwie."""
     if name == "lanes":
-        if n_pedestrians is None:
-            return LaneFormationScenario()
-        return LaneFormationScenario(n_pedestrians=n_pedestrians)
+        return LaneFormationScenario() if n_pedestrians is None else LaneFormationScenario(n_pedestrians=n_pedestrians)
     if name == "bottleneck":
-        if n_pedestrians is None:
-            return BottleneckScenario()
-        return BottleneckScenario(n_per_group=max(1, n_pedestrians // 2))
+        return BottleneckScenario() if n_pedestrians is None else BottleneckScenario(n_per_group=max(1, n_pedestrians // 2))
+    if name == "corner":
+        return CornerScenario() if n_pedestrians is None else CornerScenario(n_pedestrians=n_pedestrians)
+    if name == "intersection":
+        return IntersectionScenario() if n_pedestrians is None else IntersectionScenario(n_pedestrians=n_pedestrians)
+    if name == "metro":
+        return MetroStationScenario() if n_pedestrians is None else MetroStationScenario(n_pedestrians=n_pedestrians)
     raise ValueError(f"Nieznany scenariusz: {name!r}")
 
 
@@ -33,7 +41,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--scenario",
-        choices=["lanes", "bottleneck"],
+        choices=["lanes", "bottleneck", "corner", "intersection", "metro"],
         default="lanes",
         help="Wybor scenariusza symulacji.",
     )
